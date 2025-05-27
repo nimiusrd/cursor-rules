@@ -25,7 +25,7 @@ Cursor Rules は、コードベースに関する特定のルールやガイド�
 このリポジトリに含まれるダウンロードスクリプトを使用すると、簡単にルールやテンプレートをダウンロードできます：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nimiusrd/cursor-rules/main/install-cursor-rules.sh | bash
+curl -fsSL https://raw.githubusercontent.com/nimiusrd/cursor-rules/main/download-cursor-rules.sh | bash
 ```
 
 ### オプション
