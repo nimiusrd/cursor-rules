@@ -32,15 +32,6 @@ RULES_DIR=".cursor/rules"
 PR_TEMPLATE_SRC=".github/pull_request_template.md"
 PR_TEMPLATE_DEST=".github/pull_request_template.md"
 
-# 非対話モードかどうかを確認
-SKIP_CONFIRM=false
-for arg in "$@"; do
-  if [[ "$arg" == "-y" || "$arg" == "--yes" ]]; then
-    SKIP_CONFIRM=true
-    break
-  fi
-done
-
 # 強制更新モードかどうかを確認
 FORCE_UPDATE=false
 for arg in "$@"; do
@@ -56,6 +47,54 @@ for arg in "$@"; do
   if [[ "$arg" == "--no-pr-template" ]]; then
     SKIP_PR_TEMPLATE=true
     break
+  fi
+done
+
+# ヘルプ関数
+show_help() {
+  echo -e "${BOLD}${CYAN}Cursor Rules ダウンロードツール${NC}"
+  echo -e "${CYAN}===============================${NC}"
+  echo ""
+  echo -e "${BOLD}使用方法:${NC}"
+  echo "  $0 [オプション]"
+  echo ""
+  echo -e "${BOLD}説明:${NC}"
+  echo "  このスクリプトは cursor-rules リポジトリから以下をダウンロードします："
+  echo "    • Cursor エディタ用のルールファイル (.cursor/rules/ ディレクトリ)"
+  echo "    • プルリクエストテンプレート (.github/ ディレクトリ)"
+  echo ""
+  echo -e "${BOLD}オプション:${NC}"
+  echo "  -h, --help           このヘルプメッセージを表示"
+  echo "  -f, --force          既存ファイルを強制的に上書き"
+  echo "  --no-pr-template     プルリクエストテンプレートのダウンロードをスキップ"
+  echo ""
+  echo -e "${BOLD}使用例:${NC}"
+  echo "  $0                   # 通常の実行"
+  echo "  $0 -f                # 既存ファイルを上書きして実行"
+  echo "  $0 --no-pr-template  # PRテンプレートなしで実行"
+  echo "  $0 -f --no-pr-template  # 強制上書き & PRテンプレートなし"
+  echo ""
+  echo -e "${BOLD}ダウンロードされるルール:${NC}"
+  local rules=(
+    "commit-message-guide"
+    "pr-creation-guide"
+    "pr-template-guide"
+  )
+  for rule in "${rules[@]}"; do
+    echo "  • $rule"
+  done
+  echo ""
+  echo -e "${BOLD}インストール先:${NC}"
+  echo "  • ルール: .cursor/rules/"
+  echo "  • PRテンプレート: .github/"
+  echo ""
+}
+
+# ヘルプオプションを確認
+for arg in "$@"; do
+  if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
+    show_help
+    exit 0
   fi
 done
 
@@ -89,21 +128,8 @@ else
   echo -e "${BOLD}モード:${NC} ${YELLOW}スキップ（既存ファイルは更新しない）${NC}"
   echo -e "    ${YELLOW}注意: 既存ファイルを上書きするには -f または --force オプションを使用してください${NC}"
 fi
-echo ""
 
-# ユーザーに確認（-y または --yes オプションがない場合）
-if [ "$SKIP_CONFIRM" = false ]; then
-  echo -en "${BOLD}ダウンロードを続行しますか？ (y/n):${NC} "
-  read CONFIRM
-  if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
-    echo -e "${YELLOW}ダウンロードを中止しました。${NC}"
-    exit 0
-  fi
-else
-  echo -e "${BLUE}非対話モードで実行しています。確認をスキップします。${NC}"
-fi
-
-echo -e "\n${BOLD}${CYAN}Cursor Rules ダウンロードを開始します...${NC}"
+echo -e "${BOLD}${CYAN}Cursor Rules ダウンロードを開始します...${NC}"
 
 # ディレクトリがなければ作成
 if [ ! -d "$RULES_DIR" ]; then
